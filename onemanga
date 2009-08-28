@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# usage: onemanga [-dlo] [-c <first chapter>[+|-<last chapter>]] <manga name> [<manga name> ...]
-#
+# usage: onemanga [-dlorz7t] [-c <first chapter>[+|-<last chapter>]] <manga name> [<manga name> ...]
+# Use r for rar archive, z for zip archive, 7 for 7zip archive, t for tar archive
 
 trap "rm -f *.jpg tmp_*;" 0
 
@@ -38,7 +38,7 @@ function progressbar() {
   echo "]"
 }
 
-while getopts ":c:dlo" op; do
+while getopts ":c:dlorz7t" op; do
   case $op in
     c)
       CHAPTER=1
@@ -52,6 +52,18 @@ while getopts ":c:dlo" op; do
       ;;
     o)
       LOG_FILE=1
+      ;;
+    r)
+      RAR_FILE=1
+      ;;
+    z)
+      ZIP_FILE=1
+      ;;
+    7)
+      SEVENZIP_FILE=1
+      ;;
+    t)
+      TAR_FILE=1
       ;;
     \?)
       echo "unknown option: -$OPTARG" >&2
@@ -196,13 +208,43 @@ for manga_name in "$@"; do
       chapter=`echoes "0" ${#int_part} 2`$chapter
     fi
 
-    cbr_file_name="${manga_name}_${chapter}.cbr"
-
-    echo -ne "\r$CLEAREOL`progressbar $i $total` (packing files...)"
-    if zip -q $cbr_file_name *.jpg; then
-      rm -f *.jpg tmp_*
-      echo -e "\r$CLEAREOL`progressbar $i $total` ($cbr_file_name)"
-      [[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] $cbr_file_name" >> "$log"
+    if [[ $RAR_FILE -eq 1 ]]; then
+	echo -ne "\r$CLEAREOL`progressbar $i $total` (packing files...)"
+    	cbr_file_name="${manga_name}_${chapter}.cbr"
+    	if rar a -inul -m5 $cbr_file_name '*.jpg'; then
+      		echo -e "\r$CLEAREOL`progressbar $i $total` ($cbr_file_name)"
+      		[[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] $cbr_file_name" >> "$log"
+	fi
     fi
+
+    if [[ $ZIP_FILE -eq 1 ]]; then
+	echo -ne "\r$CLEAREOL`progressbar $i $total` (packing files...)"
+    	cbr_file_name="${manga_name}_${chapter}.cbz"
+    	if zip -q -9 $cbr_file_name *.jpg; then
+      		echo -e "\r$CLEAREOL`progressbar $i $total` ($cbr_file_name)"
+      		[[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] $cbr_file_name" >> "$log"
+    	fi
+    fi
+
+    if [[ $SEVENZIP_FILE -eq 1 ]]; then
+	echo -ne "\r$CLEAREOL`progressbar $i $total` (packing files...)"
+    	cbr_file_name="${manga_name}_${chapter}.cb7"
+    	if 7z a -mx9 $cbr_file_name *.jpg > /dev/null 2>&1; then
+      		echo -e "\r$CLEAREOL`progressbar $i $total` ($cbr_file_name)"
+      		[[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] $cbr_file_name" >> "$log"
+    	fi
+    fi
+
+    if [[ $TAR_FILE -eq 1 ]]; then
+	echo -ne "\r$CLEAREOL`progressbar $i $total` (packing files...)"
+    	cbr_file_name="${manga_name}_${chapter}.cbt"
+    	if tar cf $cbr_file_name *.jpg; then
+      		echo -e "\r$CLEAREOL`progressbar $i $total` ($cbr_file_name)"
+      		[[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] $cbr_file_name" >> "$log"
+    	fi
+    fi
+
+    rm -f *.jpg tmp_*
+
   done
-done
+ done
