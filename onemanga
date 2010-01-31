@@ -141,8 +141,19 @@ for manga_name in "$@"; do
   display_name=`echo $manga_name | sed -e "s/_/ /g" -e "s/%27/'/g"`
   word_count=`echo $display_name | wc -w`
   sort_key=$((word_count + 1))
-  local_chapter=`ls ${manga_name}_*.cbr 2> /dev/null | sort -r -n -k $sort_key -t_ | head -n1`
-  local_chapter=`basename "${local_chapter##*_}" .cbr`
+
+  if [[ $ZIP_FILE -eq 1 ]]; then
+    ext=".cbz"
+  elif [[ $SEVENZIP_FILE -eq 1 ]]; then
+    ext=".cb7"
+  elif [[ $TAR_FILE -eq 1 ]]; then
+    ext=".cbt"
+  else  #default rar
+    ext=".cbr"
+  fi
+
+  local_chapter=`ls ${manga_name}_*${ext} 2> /dev/null | sort -r -n -k $sort_key -t_ | head -n1`
+  local_chapter=`basename "${local_chapter##*_}" ${ext}`
 
   if [[ -n $local_chapter ]]; then
     if [[ `echo "$local_chapter == 0" | bc` -eq 0 ]]; then
