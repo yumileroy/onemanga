@@ -1,11 +1,12 @@
 #!/bin/bash
 #
-# usage: onemanga [-dlorz7t] [-c <first chapter>[+|-<last chapter>]] <manga name> [<manga name> ...]
+# usage: onemanga [-dlorz7ts] [-c <first chapter>[+|-<last chapter>]] <manga name> [<manga name> ...]
 # Use r for rar archive, z for zip archive, 7 for 7zip archive, t for tar archive
 
-trap "rm -f *.jpg tmp_*;" 0
+trap cleanup 0
 
 base_url="http://www.onemanga.com"
+search_url="$base_url/directory"
 base_dir=`pwd`
 log="$base_dir/onemanga.log"
 
@@ -38,7 +39,11 @@ function progressbar() {
   echo "]"
 }
 
-while getopts ":c:dlorz7t" op; do
+function cleanup() {
+  rm -f *.jpg tmp_*
+}
+
+while getopts ":c:dlorz7ts:" op; do
   case $op in
     c)
       CHAPTER=1
@@ -65,9 +70,24 @@ while getopts ":c:dlorz7t" op; do
     t)
       TAR_FILE=1
       ;;
+    s)
+      SEARCH=1
+      KEYWORD="$OPTARG"
+      ;;
     \?)
       echo "unknown option: -$OPTARG" >&2
-      ERROR=1
+      exit 1
+      ;;
+    :)
+      case $OPTARG in
+        c)
+          echo "please specify a chapter number"
+          ;;
+        s)
+          echo "please specify a search keyword"
+          ;;
+      esac
+      exit 1
       ;;
   esac
 done
@@ -76,10 +96,14 @@ shift $(($OPTIND - 1))
 
 if [[ $CHAPTER -eq 1 && $LATEST -eq 1 ]]; then
   echo "invalid option: -c and -l cannot be used at the same time" >&2
-  ERROR=1
+  exit 1
 fi
 
-if [[ $ERROR -eq 1 ]]; then
+if [[ $SEARCH ]]; then
+  echo -e "\nsearching $search_url...\n"
+  wget -qO - "$search_url/" | grep "ch-subject" | sed -e 's@^.*href\=\"/@\(@g' -e 's@</a>.*@@g' -e 's@/.*>@\):@g' | awk -F: '{print $2 "\t" $1}' | sed "s/\&\#39\;/'/g" | grep -i "$KEYWORD" > tmp_search
+  [[ -s tmp_search ]] && cat tmp_search && echo ""
+  echo "`cat tmp_search | wc -l` matches."
   exit
 fi
 
@@ -114,11 +138,22 @@ for manga_name in "$@"; do
     cd "$base_dir/$manga_name"
   fi
 
-  display_name=`echo $manga_name | sed "s/_/ /g"`
+  display_name=`echo $manga_name | sed -e "s/_/ /g" -e "s/%27/'/g"`
   word_count=`echo $display_name | wc -w`
   sort_key=$((word_count + 1))
-  local_chapter=`ls ${manga_name}_*.cbr 2> /dev/null | sort -r -n -k $sort_key -t_ | head -n1`
-  local_chapter=`basename "${local_chapter##*_}" .cbr`
+
+  if [[ $ZIP_FILE -eq 1 ]]; then
+    ext=".cbz"
+  elif [[ $SEVENZIP_FILE -eq 1 ]]; then
+    ext=".cb7"
+  elif [[ $TAR_FILE -eq 1 ]]; then
+    ext=".cbt"
+  else  #default rar
+    ext=".cbr"
+  fi
+
+  local_chapter=`ls ${manga_name}_*${ext} 2> /dev/null | sort -r -n -k $sort_key -t_ | head -n1`
+  local_chapter=`basename "${local_chapter##*_}" ${ext}`
 
   if [[ -n $local_chapter ]]; then
     if [[ `echo "$local_chapter == 0" | bc` -eq 0 ]]; then
@@ -133,14 +168,14 @@ for manga_name in "$@"; do
   
   if [[ ! -f "index.html" ]]; then
     echo -e "\b\b\b [ERROR]\nthe url seems to be invalid, or there may be a problem with your internet connection"
-    exit
+    exit 1
   fi
 
   grep "ch-subject" index.html 2> /dev/null | grep "a href" | cut -f3 -d\/ > tmp_chapters
   
   if [[ ! -s tmp_chapters ]]; then
     echo -e "\b\b\b [ERROR]\ncannot extract chapters info from the url"
-    exit
+    exit 1
   fi
   
   echo -e "\b\b\b [OK]"
@@ -152,6 +187,7 @@ for manga_name in "$@"; do
     
     if [[ $local_chapter == $latest_chapter ]]; then
       echo "no updates found"
+      cleanup
       continue
     fi
   fi
@@ -189,8 +225,8 @@ for manga_name in "$@"; do
     echo "downloading $display_name chapter $chapter"
     echo -ne "\r$CLEAREOL`progressbar 0 1` (initializing...)"
     page_location=`wget -qO - $base_url/$manga_name/$chapter/ | grep -i "begin reading" | cut -f2 -d\"`
-    wget -qO tmp_page $base_url$page_location
-    PAGES=`grep -i "option value" tmp_page | grep -i -v "select manga series" | cut -f2 -d\"`
+    wget -qO - $base_url$page_location | sed '/id="id_page_select"/,/\/select/ s/\<option value=/\n\<option value=/g' > tmp_page
+    PAGES=`sed -n '/id="id_page_select"/,/\/select/ p' < tmp_page | grep -i "option value" | cut -f2 -d\"`
     image_location=`grep -i "manga-page" tmp_page | cut -f4 -d\"`
     image_location=${image_location%/*.jpg}
     
@@ -208,41 +244,36 @@ for manga_name in "$@"; do
       chapter=`echoes "0" ${#int_part} 2`$chapter
     fi
 
-    if [[ $RAR_FILE -eq 1 ]]; then
-	echo -ne "\r$CLEAREOL`progressbar $i $total` (packing files...)"
-    	cbr_file_name="${manga_name}_${chapter}.cbr"
-    	if rar a -inul -m5 $cbr_file_name '*.jpg'; then
-      		echo -e "\r$CLEAREOL`progressbar $i $total` ($cbr_file_name)"
-      		[[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] $cbr_file_name" >> "$log"
-	fi
-    fi
+    echo -ne "\r$CLEAREOL`progressbar $i $total` (packing files...)"
 
+    success=0
     if [[ $ZIP_FILE -eq 1 ]]; then
-	echo -ne "\r$CLEAREOL`progressbar $i $total` (packing files...)"
-    	cbr_file_name="${manga_name}_${chapter}.cbz"
-    	if zip -q -9 $cbr_file_name *.jpg; then
-      		echo -e "\r$CLEAREOL`progressbar $i $total` ($cbr_file_name)"
-      		[[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] $cbr_file_name" >> "$log"
-    	fi
+      cbr_file_name="${manga_name}_${chapter}.cbz"
+      if zip -q -9 $cbr_file_name *.jpg; then
+        success=1
+      fi
+    elif [[ $SEVENZIP_FILE -eq 1 ]]; then
+      cbr_file_name="${manga_name}_${chapter}.cb7"
+      if 7z a -mx9 $cbr_file_name *.jpg > /dev/null 2>&1; then
+        success=1
+      fi
+    elif [[ $TAR_FILE -eq 1 ]]; then
+      cbr_file_name="${manga_name}_${chapter}.cbt"
+      if tar cf $cbr_file_name *.jpg; then
+        success=1
+      fi
+    else  #default rar
+      cbr_file_name="${manga_name}_${chapter}.cbr"
+      if rar a -inul -m5 $cbr_file_name *.jpg; then
+        success=1
+      fi
     fi
 
-    if [[ $SEVENZIP_FILE -eq 1 ]]; then
-	echo -ne "\r$CLEAREOL`progressbar $i $total` (packing files...)"
-    	cbr_file_name="${manga_name}_${chapter}.cb7"
-    	if 7z a -mx9 $cbr_file_name *.jpg > /dev/null 2>&1; then
-      		echo -e "\r$CLEAREOL`progressbar $i $total` ($cbr_file_name)"
-      		[[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] $cbr_file_name" >> "$log"
-    	fi
+    if [[ $success -eq 1 ]]; then
+      cleanup
+      echo -e "\r$CLEAREOL`progressbar $i $total` ($cbr_file_name)"
+      [[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] $cbr_file_name" >> "$log"
     fi
-
-    if [[ $TAR_FILE -eq 1 ]]; then
-	echo -ne "\r$CLEAREOL`progressbar $i $total` (packing files...)"
-    	cbr_file_name="${manga_name}_${chapter}.cbt"
-    	if tar cf $cbr_file_name *.jpg; then
-      		echo -e "\r$CLEAREOL`progressbar $i $total` ($cbr_file_name)"
-      		[[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] $cbr_file_name" >> "$log"
-    	fi
-    fi
-
   done
- done
+done
+
