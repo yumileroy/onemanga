@@ -40,7 +40,7 @@ function progressbar() {
 }
 
 function cleanup() {
-  rm -f *.jpg tmp_*
+  rm -f *.jpg tmp_* index.html
 }
 
 while getopts ":c:dlorz7ts:" op; do
@@ -144,6 +144,7 @@ for manga_name in "$@"; do
   sort_key=$((word_count + 1))
   local_chapter=`ls ${manga_name}_*.cb? 2> /dev/null | sort -r -n -k $sort_key -t_ | head -n1`
   local_chapter=${local_chapter##*_}
+  local_chapter=${local_chapter%.*}
 
   if [[ -n $local_chapter ]]; then
     if [[ `echo "$local_chapter == 0" | bc` -eq 0 ]]; then
