@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# usage: onemanga [-odlorz7ts] [-c <first chapter>[+|-<last chapter>]] <manga name> [<manga name> ...]
+# usage: onemanga [-wdlorz7ts] [-c <first chapter>[+|-<last chapter>]] <manga name> [<manga name> ...]
 # Use r for rar archive, z for zip archive, 7 for 7zip archive, t for tar archive
 
 trap cleanup 0
