@@ -11,9 +11,9 @@ One Manga Downloader (shell script)
 
 ###**Instructions of Usage**:
 - Example to Download in rar, zip, 7z, tar of Mirai Nikki Chapter 1 to 52:
- - 	**onemanga -rz7t -c 1-52 Mirai_Nikki**
+    **onemanga -rz7t -c 1-52 Mirai_Nikki**
 - Same as above example with logging:
- - 	**onemanga -orz7t -c 1-52 Mirai_Nikki**
+    **onemanga -orz7t -c 1-52 Mirai_Nikki**
 - Explaination of options (wdlorz7tsc):
  -	w for OMWEB display compatability mode (Nothing much you would need to use)
  -	d for using directory (Not too sure what it is for)
