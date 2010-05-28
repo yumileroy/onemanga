@@ -40,7 +40,7 @@ function progressbar() {
 }
 
 function cleanup() {
-  rm -f *.jpg tmp_*
+  rm -f *.jpg tmp_* index.html
 }
 
 while getopts ":c:dlorz7ts:" op; do
@@ -75,16 +75,16 @@ while getopts ":c:dlorz7ts:" op; do
       KEYWORD="$OPTARG"
       ;;
     \?)
-      echo "unknown option: -$OPTARG" >&2
+      echo "Unknown option: -$OPTARG" >&2
       exit 1
       ;;
     :)
       case $OPTARG in
         c)
-          echo "please specify a chapter number"
+          echo "Please specify a chapter number"
           ;;
         s)
-          echo "please specify a search keyword"
+          echo "Please specify a search keyword"
           ;;
       esac
       exit 1
@@ -95,15 +95,16 @@ done
 shift $(($OPTIND - 1))
 
 if [[ $CHAPTER -eq 1 && $LATEST -eq 1 ]]; then
-  echo "invalid option: -c and -l cannot be used at the same time" >&2
+  echo "Invalid option: -c and -l cannot be used at the same time" >&2
   exit 1
 fi
 
 if [[ $SEARCH ]]; then
-  echo -e "\nsearching $search_url...\n"
-  wget -qO - "$search_url/" | grep "ch-subject" | sed -e 's@^.*href\=\"/@\(@g' -e 's@</a>.*@@g' -e 's@/.*>@\):@g' | awk -F: '{print $2 "\t" $1}' | sed "s/\&\#39\;/'/g" | grep -i "$KEYWORD" > tmp_search
+  echo -e "\nSearching ${search_url}...\n"
+  wget -qO - "${search_url}/" | grep "ch-subject" | sed -e 's@^.*href\=\"/@\(@g' -e 's@</a>.*@@g' -e 's@/.*>@\):@g' | awk -F: '{print $2 "\t" $1}' | sed "s/\&\#39\;/'/g" | grep -i "$KEYWORD" > tmp_search
   [[ -s tmp_search ]] && cat tmp_search && echo ""
-  echo "`cat tmp_search | wc -l` matches."
+  result=`cat tmp_search | wc -l`
+  echo -n "${result}" && [[ $result -gt 1 ]] && echo " results." || echo " result."
   exit
 fi
 
@@ -130,7 +131,7 @@ for manga_name in "$@"; do
   if [[ $USE_DIR -eq 1 ]]; then
     if [[ -f "$base_dir/$manga_name" ]]; then
       echo -e "\n$manga_name [SKIPPED]"
-      echo "not a directory"
+      echo "Not a directory"
       continue
     fi
 
@@ -141,19 +142,9 @@ for manga_name in "$@"; do
   display_name=`echo $manga_name | sed -e "s/_/ /g" -e "s/%27/'/g"`
   word_count=`echo $display_name | wc -w`
   sort_key=$((word_count + 1))
-
-  if [[ $ZIP_FILE -eq 1 ]]; then
-    ext=".cbz"
-  elif [[ $SEVENZIP_FILE -eq 1 ]]; then
-    ext=".cb7"
-  elif [[ $TAR_FILE -eq 1 ]]; then
-    ext=".cbt"
-  else  #default rar
-    ext=".cbr"
-  fi
-
-  local_chapter=`ls ${manga_name}_*${ext} 2> /dev/null | sort -r -n -k $sort_key -t_ | head -n1`
-  local_chapter=`basename "${local_chapter##*_}" ${ext}`
+  local_chapter=`ls ${manga_name}_*.cb? 2> /dev/null | sort -r -n -k $sort_key -t_ | head -n1`
+  local_chapter=${local_chapter##*_}
+  local_chapter=${local_chapter%.*}
 
   if [[ -n $local_chapter ]]; then
     if [[ `echo "$local_chapter == 0" | bc` -eq 0 ]]; then
@@ -163,18 +154,18 @@ for manga_name in "$@"; do
     local_chapter="none"
   fi
 
-  echo -ne "\nopening $base_url/$manga_name..."
+  echo -ne "\nOpening $base_url/$manga_name..."
   wget -qN --no-cache $base_url/$manga_name/
   
   if [[ ! -f "index.html" ]]; then
-    echo -e "\b\b\b [ERROR]\nthe url seems to be invalid, or there may be a problem with your internet connection"
+    echo -e "\b\b\b [ERROR]\n\nPlease make sure the manga name \"${manga_name}\" is spelled correctly.\nOtherwise, there may be a problem with your internet connection."
     exit 1
   fi
 
   grep "ch-subject" index.html 2> /dev/null | grep "a href" | cut -f3 -d\/ > tmp_chapters
   
   if [[ ! -s tmp_chapters ]]; then
-    echo -e "\b\b\b [ERROR]\ncannot extract chapters info from the url"
+    echo -e "\b\b\b [ERROR]\n\nCannot extract chapter list from the specified URL."
     exit 1
   fi
   
@@ -183,10 +174,10 @@ for manga_name in "$@"; do
   latest_chapter=`head -1 tmp_chapters`
   
   if [[ -n $local_chapter && ! $CHAPTER -eq 1 ]]; then
-    echo "local chapter: ${local_chapter} / latest chapter: $latest_chapter"
+    echo "Local chapter: ${local_chapter} / Latest chapter: $latest_chapter"
     
     if [[ $local_chapter == $latest_chapter ]]; then
-      echo "no updates found"
+      echo "No update."
       cleanup
       continue
     fi
@@ -213,7 +204,7 @@ for manga_name in "$@"; do
   fi
   
   if [[ $CHAPTER -eq 1 || -z $local_chapter ]]; then
-    echo "from chapter: $first_chapter / to chapter: $last_chapter"
+    echo "From chapter: $first_chapter / To chapter: $last_chapter"
   fi
 
   index=`sort -n tmp_chapters | grep -nm1 $first_chapter | cut -f1 -d:`
@@ -222,10 +213,11 @@ for manga_name in "$@"; do
   CHAPTERS=`sort -n tmp_chapters | awk 'FNR >= '$index' && FNR <= '$last_index`
 
   for chapter in $CHAPTERS; do
-    echo "downloading $display_name chapter $chapter"
-    echo -ne "\r$CLEAREOL`progressbar 0 1` (initializing...)"
+    echo "Downloading $display_name chapter $chapter"
+    echo -ne "\r$CLEAREOL`progressbar 0 1` (Initializing...)"
     page_location=`wget -qO - $base_url/$manga_name/$chapter/ | grep -i "begin reading" | cut -f2 -d\"`
-    wget -qO - $base_url$page_location | sed '/id="id_page_select"/,/\/select/ s/\<option value=/\n\<option value=/g' > tmp_page
+    wget -qO - $base_url$page_location | sed '/id="id_page_select"/,/\/select/ s/\<option value=/\
+\<option value=/g' > tmp_page
     PAGES=`sed -n '/id="id_page_select"/,/\/select/ p' < tmp_page | grep -i "option value" | cut -f2 -d\"`
     image_location=`grep -i "manga-page" tmp_page | cut -f4 -d\"`
     image_location=${image_location%/*.jpg}
@@ -244,35 +236,35 @@ for manga_name in "$@"; do
       chapter=`echoes "0" ${#int_part} 2`$chapter
     fi
 
-    echo -ne "\r$CLEAREOL`progressbar $i $total` (packing files...)"
+    echo -ne "\r$CLEAREOL`progressbar $i $total` (Creating archive...)"
 
     success=0
     if [[ $ZIP_FILE -eq 1 ]]; then
-      cbr_file_name="${manga_name}_${chapter}.cbz"
-      if zip -q -9 $cbr_file_name *.jpg; then
+      archive_name="${manga_name}_${chapter}.cbz"
+      if zip -q -9 $archive_name *.jpg; then
         success=1
       fi
     elif [[ $SEVENZIP_FILE -eq 1 ]]; then
-      cbr_file_name="${manga_name}_${chapter}.cb7"
-      if 7z a -mx9 $cbr_file_name *.jpg > /dev/null 2>&1; then
+      archive_name="${manga_name}_${chapter}.cb7"
+      if 7z a -mx9 $archive_name *.jpg > /dev/null 2>&1; then
         success=1
       fi
     elif [[ $TAR_FILE -eq 1 ]]; then
-      cbr_file_name="${manga_name}_${chapter}.cbt"
-      if tar cf $cbr_file_name *.jpg; then
+      archive_name="${manga_name}_${chapter}.cbt"
+      if tar cf $archive_name *.jpg; then
         success=1
       fi
     else  #default rar
-      cbr_file_name="${manga_name}_${chapter}.cbr"
-      if rar a -inul -m5 $cbr_file_name *.jpg; then
+      archive_name="${manga_name}_${chapter}.cbr"
+      if rar a -inul -m5 $archive_name *.jpg; then
         success=1
       fi
     fi
 
     if [[ $success -eq 1 ]]; then
       cleanup
-      echo -e "\r$CLEAREOL`progressbar $i $total` ($cbr_file_name)"
-      [[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] $cbr_file_name" >> "$log"
+      echo -e "\r$CLEAREOL`progressbar $i $total` ($archive_name)"
+      [[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] $archive_name" >> "$log"
     fi
   done
 done
