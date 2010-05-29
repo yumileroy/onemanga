@@ -20,6 +20,12 @@ One Manga Downloader (shell script)
 	p7z (Needed to compress .cb7)
 	tar (Needed to compress .cbt, but I'm sure everyone has that on their *nix-based systems, again GNU version recommended)
 
+###**Instructions of Installation**:
+In the current directory, execute either one of the following lines:
+
+	install -m755 onemanga /usr/bin
+	cp onemanga /usr/bin/ && chmod 755 /usr/bin/onemanga
+
 ###**Instructions of Usage**:
 
 #### Example to Download in rar, zip, 7z, tar of Mirai Nikki Chapter 1 to 52:
