@@ -9,6 +9,17 @@ One Manga Downloader (shell script)
 - Basic Logging - Time and Date of Filename Downloaded
 - Supports OneManga.com and 1000Manga.com
 
+###**Requirements**:
+
+	awk, grep, sed (GNU versions recommended, not tested on non-GNU versions, for file-processing.)
+	bc (CLI Calculator for the meter bar)
+	GNU coreutils (I'm sure everyone has that on their *nix-based systems)
+	GNU wget (Used for downloading)
+	rar (Needed to compress .cbr)
+	zip (Needed to compress .cbz)
+	p7z (Needed to compress .cb7)
+	tar (Needed to compress .cbt, but I'm sure everyone has that on their *nix-based systems, again GNU version recommended)
+
 ###**Instructions of Usage**:
 
 #### Example to Download in rar, zip, 7z, tar of Mirai Nikki Chapter 1 to 52:
