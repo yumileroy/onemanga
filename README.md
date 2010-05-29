@@ -21,7 +21,7 @@ One Manga Downloader (shell script)
 	tar (Needed to compress .cbt, but I'm sure everyone has that on their *nix-based systems, again GNU version recommended)
 
 ###**Instructions of Installation**:
-In the current directory, execute either one of the following lines:
+#### In the current directory, execute either one of the following lines:
 
 	install -m755 onemanga /usr/bin
 	cp onemanga /usr/bin/ && chmod 755 /usr/bin/onemanga
