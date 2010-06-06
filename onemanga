@@ -123,7 +123,7 @@ fi
 
 if [[ $SEARCH ]]; then
    echo -e "\nSearching ${search_url}...\n"
-   wget -qO - "${search_url}/" | grep "ch-subject" | sed -e 's@^.*href\=\"/@\(@g' -e 's@</a>.*@@g' -e 's@/.*>@\):@g' | awk -F: '{print $2 "\t" $1}' | sed "s/\&\#39\;/'/g" | grep -i "$KEYWORD" > tmp_search
+   curl -s "${search_url}/" | grep "ch-subject" | sed -e 's@^.*href\=\"/@\(@g' -e 's@</a>.*@@g' -e 's@/.*>@\):@g' | awk -F: '{print $2 "\t" $1}' | sed "s/\&\#39\;/'/g" | grep -i "$KEYWORD" > tmp_search
    [[ -s tmp_search ]] && cat tmp_search && echo ""
    result=`cat tmp_search | wc -l`
    echo -n "${result}" && [[ $result -gt 1 ]] && echo " results." || echo " result."
@@ -181,7 +181,7 @@ for manga_name in "$@"; do
    fi
    
    echo -ne "\nOpening $base_url/$manga_name..."
-   wget -O tmp_index --no-cache $base_url/$manga_name/ 2>tmp_status
+   curl -o tmp_index $base_url/$manga_name/ 2>tmp_status
    
    if [[ ! -s "tmp_index" ]]; then
       if [[ `grep "ERROR 404: Not Found" tmp_status | wc -l` -gt 0 ]]; then
@@ -271,7 +271,7 @@ for manga_name in "$@"; do
       ##
       # BEGIN support for series that are hosted on 1000manga.com
       ##
-      redirected=`wget -qO - $base_url/$manga_name/$chapter/ | grep -i "read this series at 1000manga.com" | wc -l`
+      redirected=`curl -s $base_url/$manga_name/$chapter/ | grep -i "read this series at 1000manga.com" | wc -l`
       
       if [[ $redirected -eq 1 ]]; then
          echo -ne "\r$CLEAREOL`progressbar 0 1` (Redirecting to 1000manga.com...)"
@@ -282,14 +282,14 @@ for manga_name in "$@"; do
          page_index=4
          image_index=10
          
-         COOKIE="--load-cookies=$cookies"
+         COOKIE="--cookie $cookies"
       fi
       ##
       # END 1000manga.com
       ##
       
-      page_location=`wget $COOKIE -qO - $base_url/$manga_name/$chapter/ | grep -i "begin reading" | cut -f${page_index} -d\"`
-      wget $COOKIE -qO - $base_url$page_location | sed '/id="id_page_select"/,/\/select/ s/\<option value=/\
+      page_location=`curl $COOKIE -s $base_url/$manga_name/$chapter/ | grep -i "begin reading" | cut -f${page_index} -d\"`
+      curl $COOKIE -s $base_url$page_location | sed '/id="id_page_select"/,/\/select/ s/\<option value=/\
       \<option value=/g' > tmp_page
       PAGES=`sed -n '/id="id_page_select"/,/\/select/ p' < tmp_page | grep -i "option value" | cut -f2 -d\"`
       image_location=`grep -i "manga-page" tmp_page | cut -f${image_index} -d\"`
@@ -301,7 +301,7 @@ for manga_name in "$@"; do
       for page in $PAGES; do
          let i++
          echo -ne "\r$CLEAREOL`progressbar $i $total` ($i/$total)"
-         wget --load-cookies=$cookies -q "$image_location/$page.jpg"
+         curl --cookie $cookies -sO "$image_location/$page.jpg"
       done
       
       int_part=${chapter%\.*}
