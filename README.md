@@ -41,7 +41,13 @@ The above command will download files named from Mirai_Nikki_01 to Mirai_Nikki_5
 
 	$ onemanga -orz7t -c 1-52 Mirai_Nikki
 
-The above command will download files named from Mirai_Nikki_01 to Mirai_Nikki_52 in .cbr, cbz, cb7 and cbt with a logfile named onemanga.log containing the time all the file was compressed.
+The above command will download files named from Mirai_Nikki_01 to Mirai_Nikki_52 in .cbr, cbz, cb7 and cbt with a logfile named onemanga.log containing the time all the files was compressed.
+
+#### Same as above with option to specify custom log filename:
+
+    $ onemanga -rz7tf MiraiNikki.log -c 1-52 Mirai_Nikki
+
+The above command will download files named from Mirai_Nikki_01 to Mirai_Nikki_52 in .cbr, cbz, cb7 and cbt with a logfile named MiraiNikki.log instead of onemanga.log containing the time all the files was compressed.
 
 #### Example to Download Manga to their own directory:
 
@@ -49,11 +55,11 @@ The above command will download files named from Mirai_Nikki_01 to Mirai_Nikki_5
 
 The above command will download Mirai_Nikki chapters 1 to 52 into directory named Mirai_Nikki. If the directory does not exist, it will be created.
 
-#### Example to search OneManga
+#### Example to search OneManga for the keyword "Mirai"
 
 	$ onemanga -s Mirai
 
-The above command will give an output of:
+The above command should give an output like below:
 
 	Searching http://www.onemanga.com/directory...
 
@@ -64,9 +70,9 @@ The above command will give an output of:
 
 	4 results.
 
-#### Explaination of options (wdlorz7tsc):
+#### Explaination of options (wdlorz7tsfc):
 
-	w for OMWEB display compatability mode (Nothing much you would need to use)
+	w for OMWEB display compatability mode (Nothing much you would need to use except when using OMWEB)
 	d for downloading mangas to their own directory
 	l for downloading only the latest chapter of the manga
 	o for enabling logging function
@@ -74,11 +80,11 @@ The above command will give an output of:
 	z for downloading manga in cbz (zip)
 	7 for downloading manga in cb7 (7zip)
 	t for downloading manga in cbt (tar)
+	s for searching OneManga for defined keyword
+    f for specifying a custom log filename, same with o except with a custom log filename
 	c for specifying chapters to download (etc -c 1-52 for Chapters 1 to 52)
-	s for searching OneManga for defined term
 
 ### **Authors**:
 
 Original Author was [**Suksit**](http://suksit.com/ "Suksit"), this is a fork by [**Yumi Nanako**](mailto:yuminanako@yuminanako.info "Yumi Nanako E-mail") and [**Leroy Lim**](mailto:leroylim@yuminanako.info "Leroy Lim E-mail").
 It is currently maintained by [**Yumi Nanako**](mailto:yuminanako@yuminanako.info "Yumi Nanako E-mail")
-

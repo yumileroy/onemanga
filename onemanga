@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# usage: onemanga [-wdlorz7ts] [-c <first chapter>[+|-<last chapter>]] <manga name> [<manga name> ...]
+# usage: onemanga [-wdlorz7tsf] [-c <first chapter>[+|-<last chapter>]] <manga name> [<manga name> ...]
 # Use r for rar archive, z for zip archive, 7 for 7zip archive, t for tar archive
 
 trap cleanup 0
@@ -55,7 +55,7 @@ function cleanup() {
    rm -f *.jpg tmp_* $cookies
 }
 
-while getopts ":c:wdlorz7ts:" op; do
+while getopts ":c:wdlorz7tsf:" op; do
    case $op in
       c)
          CHAPTER=1
@@ -89,6 +89,10 @@ while getopts ":c:wdlorz7ts:" op; do
          SEARCH=1
          KEYWORD="$OPTARG"
       ;;
+      f)
+         LOG_FILE=1
+         log="$base_dir/$OPTARG"
+      ;;
       \?)
          echo "Unknown option: -$OPTARG" >&2
          exit 1
@@ -100,6 +104,9 @@ while getopts ":c:wdlorz7ts:" op; do
             ;;
             s)
                echo "Please specify a search keyword"
+            ;;
+            f)
+               echo "Please specify a logfile name"
             ;;
          esac
          exit 1
@@ -256,6 +263,9 @@ for manga_name in "$@"; do
       COOKIE=""
       
       echo "Downloading $display_name chapter $chapter"
+      if [[ $LOG_FILE -eq 1 ]]; then
+          echo "Logging to: ${log}"
+      fi
       echo -ne "\r$CLEAREOL`progressbar 0 1` (Initializing...)"
       
       ##
