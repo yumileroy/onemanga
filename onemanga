@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# usage: onemanga [-wdlorz7tsf] [-c <first chapter>[+|-<last chapter>]] <manga name> [<manga name> ...]
+# usage: onemanga [-wdlorz7ts] [ -f <log filename> ] [-c <first chapter>[+|-<last chapter>]] <manga name> [<manga name> ...]
 # Use r for rar archive, z for zip archive, 7 for 7zip archive, t for tar archive
 
 trap cleanup 0
@@ -55,11 +55,15 @@ function cleanup() {
    rm -f *.jpg tmp_* $cookies
 }
 
-while getopts ":c:wdlorz7tsf:" op; do
+while getopts ":c:f:wdlorz7ts:" op; do
    case $op in
       c)
          CHAPTER=1
          CHAPTER_ARG="$OPTARG"
+      ;;
+      f)
+         LOG_FILE=1
+         log="$base_dir/$OPTARG"
       ;;
       w)
          OMWEB=1
@@ -89,10 +93,6 @@ while getopts ":c:wdlorz7tsf:" op; do
          SEARCH=1
          KEYWORD="$OPTARG"
       ;;
-      f)
-         LOG_FILE=1
-         log="$base_dir/$OPTARG"
-      ;;
       \?)
          echo "Unknown option: -$OPTARG" >&2
          exit 1
@@ -102,11 +102,11 @@ while getopts ":c:wdlorz7tsf:" op; do
             c)
                echo "Please specify a chapter number"
             ;;
-            s)
-               echo "Please specify a search keyword"
-            ;;
             f)
                echo "Please specify a logfile name"
+            ;;
+            s)
+               echo "Please specify a search keyword"
             ;;
          esac
          exit 1
