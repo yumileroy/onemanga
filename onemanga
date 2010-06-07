@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # usage: onemanga [-wdlorz7ts] [ -f <log filename> ] [-c <first chapter>[+|-<last chapter>]] <manga name> [<manga name> ...]
 # Use r for rar archive, z for zip archive, 7 for 7zip archive, t for tar archive
