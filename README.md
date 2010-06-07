@@ -84,6 +84,19 @@ The above command should give an output like below:
     f for specifying a custom log filename, same with o except with a custom log filename
 	c for specifying chapters to download (etc -c 1-52 for Chapters 1 to 52)
 
+### **onemanga Web Interface (Optional)**:
+#### Description:
+
+I've coded a PHP web interface for the onemanga shell script. It is available [here](http://github.com/yumileroy/omweb/ "OMWEB"). Feel free to fork it on Github and modify it as you like, the code is rather unpolished and messy, would be nice if someone forked it on Github and tidied it up. Any ideas on how to further improve the web interface would be gladly considered. 
+
+#### Installation:
+
+To use the PHP script, just upload it to a web-accessible directory on your web server, and make sure that onemanga is located in a directory located in the SYSTEM PATH variable like /usr/bin.
+
+#### Demo:
+
+An demo of the script running is [here](http://yuminanako.info/omweb/ "Yumi OMWEB Demo").
+
 ### **Authors**:
 
 Original Author was [**Suksit**](http://suksit.com/ "Suksit"), this is a fork by [**Yumi Nanako**](mailto:yuminanako@yuminanako.info "Yumi Nanako E-mail") and [**Leroy Lim**](mailto:leroylim@yuminanako.info "Leroy Lim E-mail").
