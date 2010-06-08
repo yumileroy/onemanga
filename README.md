@@ -6,7 +6,7 @@ One Manga Downloader (shell script)
 **One Manga Downloader** is a [Bash](http://www.gnu.org/software/bash/ "Bash Website") script which allow you to download Manga from OneManga to compressed archive files.
 
 - Supported Archives: rar, zip, 7z, tar
-- Basic Logging - Time and Date of Filename Downloaded
+- Basic Logging - Time and Date of Filename Downloaded with MD5 checksums
 - Supports OneManga.com and 1000Manga.com
 
 ### **Requirements**:
@@ -16,6 +16,7 @@ One Manga Downloader (shell script)
 	bc (CLI Calculator for the meter bar)
     GNU bash (That's I'm sure everyone has that, well if not most. Tested on Bash 3.0.0 to 4.1.5)
 	GNU coreutils (I'm sure everyone has that on their *nix-based systems)
+    md5sum (Used for generating md5 checksums for the log)
 	GNU wget (Used for downloading)
     tput (Included in ncurses)
 	rar (Needed to compress .cbr)
