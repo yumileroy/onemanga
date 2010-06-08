@@ -53,7 +53,7 @@ function progressbar() {
 }
 
 function checkprereqs() {
-   CMDS="awk grep sed bc curl rar zip 7z tar"
+   CMDS="awk grep sed bc md5sum curl rar zip 7z tar"
    for i in $CMDS
    do
        type -P $i &>/dev/null  && echo -e "$i command found. ${T}${G}[OK]${N}" && continue  || { echo -e "$i command not found. ${T}${R}[ERROR]${N}"; }
@@ -335,7 +335,7 @@ for manga_name in "$@"; do
          archive_name="${manga_name}_${chapter}.cbr"
          if rar a -inul -m5 $archive_name '*.jpg'; then
             echo -e "\r$CLEAREOL`progressbar $i $total` ($archive_name)"
-            [[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] $archive_name" >> "$log"
+            [[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] [`md5sum $archive_name | awk '{print $1}'`] $archive_name" >> "$log"
          fi
       fi
       
@@ -344,7 +344,7 @@ for manga_name in "$@"; do
          archive_name="${manga_name}_${chapter}.cbz"
          if zip -q -9 $archive_name *.jpg; then
             echo -e "\r$CLEAREOL`progressbar $i $total` ($archive_name)"
-            [[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] $archive_name" >> "$log"
+            [[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] [`md5sum $archive_name | awk '{print $1}'`] $archive_name" >> "$log"
          fi
       fi
       
@@ -353,7 +353,7 @@ for manga_name in "$@"; do
          archive_name="${manga_name}_${chapter}.cb7"
          if 7z a -mx9 $archive_name *.jpg > /dev/null 2>&1; then
             echo -e "\r$CLEAREOL`progressbar $i $total` ($archive_name)"
-            [[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] $archive_name" >> "$log"
+            [[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] [`md5sum $archive_name | awk '{print $1}'`] $archive_name" >> "$log"
          fi
       fi
       
@@ -362,7 +362,7 @@ for manga_name in "$@"; do
          archive_name="${manga_name}_${chapter}.cbt"
          if tar cf $archive_name *.jpg; then
             echo -e "\r$CLEAREOL`progressbar $i $total` ($archive_name)"
-            [[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] $archive_name" >> "$log"
+            [[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] [`md5sum $archive_name | awk '{print $1}'`] $archive_name" >> "$log"
          fi
       fi
    done
