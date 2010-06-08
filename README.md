@@ -17,6 +17,7 @@ One Manga Downloader (shell script)
     GNU bash (That's I'm sure everyone has that, well if not most. Tested on Bash 3.0.0 to 4.1.5)
 	GNU coreutils (I'm sure everyone has that on their *nix-based systems)
 	GNU wget (Used for downloading)
+    tput (Included in ncurses)
 	rar (Needed to compress .cbr)
 	zip (Needed to compress .cbz)
 	p7z (Needed to compress .cb7)
@@ -34,6 +35,10 @@ One Manga Downloader (shell script)
 or
 
 	$ cp onemanga /usr/bin/ && chmod 755 /usr/bin/onemanga
+
+or
+
+    $ make install
 
 ### **Instructions of Usage**:
 #### Example to Download in rar, zip, 7z, tar of Mirai Nikki Chapter 1 to 52:
