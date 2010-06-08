@@ -53,7 +53,7 @@ function progressbar() {
 }
 
 function checkprereqs() {
-   CMDS="awk grep sed bc wget rar zip 7z tar"
+   CMDS="awk grep sed bc curl rar zip 7z tar"
    for i in $CMDS
    do
        type -P $i &>/dev/null  && echo -e "$i command found. ${T}${G}[OK]${N}" && continue  || { echo -e "$i command not found. ${T}${R}[ERROR]${N}"; }
