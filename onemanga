@@ -23,6 +23,7 @@ B='\e[0;34m'
 M='\e[0;35m'
 C='\e[0;36m'
 N='\e[0m'
+T='\t'
 
 function calc() {
    echo "scale=2; $*" | bc -q 2>/dev/null | cut -f1 -d.
@@ -51,11 +52,19 @@ function progressbar() {
    echo "]"
 }
 
+function checkprereqs() {
+   CMDS="awk grep sed bc wget rar zip 7z tar"
+   for i in $CMDS
+   do
+       type -P $i &>/dev/null  && echo -e "$i command found. ${T}${G}[OK]${N}" && continue  || { echo -e "$i command not found. ${T}${R}[ERROR]${N}"; }
+   done
+}
+
 function cleanup() {
    rm -f *.jpg tmp_* $cookies
 }
 
-while getopts ":c:f:wdlorz7ts:" op; do
+while getopts ":c:f:wdlorz7tps:" op; do
    case $op in
       c)
          CHAPTER=1
@@ -89,6 +98,9 @@ while getopts ":c:f:wdlorz7ts:" op; do
       t)
          TAR_FILE=1
       ;;
+      p)
+         CHECKPREREQS=1
+      ;;
       s)
          SEARCH=1
          KEYWORD="$OPTARG"
@@ -115,6 +127,11 @@ while getopts ":c:f:wdlorz7ts:" op; do
 done
 
 shift $(($OPTIND - 1))
+
+if [[ $CHECKPREREQS -eq 1 ]]; then
+   checkprereqs
+   exit
+fi
 
 if [[ $CHAPTER -eq 1 && $LATEST -eq 1 ]]; then
    echo "Invalid option: -c and -l cannot be used at the same time" >&2

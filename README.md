@@ -10,6 +10,7 @@ One Manga Downloader (shell script)
 - Supports OneManga.com and 1000Manga.com
 
 ###**Requirements**:
+#### List of prerequisites:
 
 	awk, grep, sed (GNU versions recommended, not tested on non-GNU versions, for file-processing.)
 	bc (CLI Calculator for the meter bar)
@@ -19,6 +20,10 @@ One Manga Downloader (shell script)
 	zip (Needed to compress .cbz)
 	p7z (Needed to compress .cb7)
 	tar (Needed to compress .cbt, but I'm sure everyone has that on their *nix-based systems, again GNU version recommended)
+
+#### To check for prerequisites:
+
+    $ onemanga -p
 
 ###**Instructions of Installation**:
 #### In the current directory, execute either one of the following lines:
@@ -70,7 +75,7 @@ The above command should give an output like below:
 
 	4 results.
 
-#### Explaination of options (wdlorz7tsfc):
+#### Explaination of options (wdlorz7tpsfc):
 
 	w for OMWEB display compatability mode (Nothing much you would need to use except when using OMWEB)
 	d for downloading mangas to their own directory
@@ -80,6 +85,7 @@ The above command should give an output like below:
 	z for downloading manga in cbz (zip)
 	7 for downloading manga in cb7 (7zip)
 	t for downloading manga in cbt (tar)
+    p for checking prerequisites required to run onemanga
 	s for searching OneManga for defined keyword
     f for specifying a custom log filename, same with o except with a custom log filename
 	c for specifying chapters to download (etc -c 1-52 for Chapters 1 to 52)
