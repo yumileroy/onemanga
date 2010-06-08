@@ -14,6 +14,7 @@ One Manga Downloader (shell script)
 
 	awk, grep, sed (GNU versions recommended, not tested on non-GNU versions, for file-processing.)
 	bc (CLI Calculator for the meter bar)
+    GNU bash (That's I'm sure everyone has that, well if not most. Tested on Bash 3.0.0 to 4.1.5)
 	GNU coreutils (I'm sure everyone has that on their *nix-based systems)
 	cURL (Used for downloading)
 	rar (Needed to compress .cbr)
