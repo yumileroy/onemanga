@@ -9,7 +9,7 @@ One Manga Downloader (shell script)
 - Basic Logging - Time and Date of Filename Downloaded
 - Supports OneManga.com and 1000Manga.com
 
-###**Requirements**:
+### **Requirements**:
 #### List of prerequisites:
 
 	awk, grep, sed (GNU versions recommended, not tested on non-GNU versions, for file-processing.)
@@ -26,7 +26,7 @@ One Manga Downloader (shell script)
 
     $ onemanga -p
 
-###**Instructions of Installation**:
+### **Instructions of Installation**:
 #### In the current directory, execute either one of the following lines:
 
 	$ install -m755 onemanga /usr/bin
@@ -35,8 +35,7 @@ or
 
 	$ cp onemanga /usr/bin/ && chmod 755 /usr/bin/onemanga
 
-###**Instructions of Usage**:
-
+### **Instructions of Usage**:
 #### Example to Download in rar, zip, 7z, tar of Mirai Nikki Chapter 1 to 52:
 
 	$ onemanga -rz7t -c 1-52 Mirai_Nikki
