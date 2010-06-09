@@ -89,6 +89,11 @@ function cleanup() {
    rm -f *.jpg tmp_* $cookies
 }
 
+if [[ $# -eq 0 ]]; then
+   help
+   exit
+fi
+
 while getopts ":c:f:hwdlorz7tgbps:" op; do
    case $op in
       c)
