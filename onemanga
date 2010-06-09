@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
-# usage: onemanga [-wdlorz7ts] [ -f <log filename> ] [-c <first chapter>[+|-<last chapter>]] <manga name> [<manga name> ...]
-# Use r for rar archive, z for zip archive, 7 for 7zip archive, t for tar archive
+# usage: onemanga [-wdlorz7tgbs] [ -f <log filename> ] [-c <first chapter>[+|-<last chapter>]] <manga name> [<manga name> ...]
+# Use r for rar archive, z for zip archive, 7 for 7zip archive, t for tar archive, g for tar.gz archive, b for tar.bz2 archive
 
 trap cleanup 0
 
@@ -53,7 +53,7 @@ function progressbar() {
 }
 
 function checkprereqs() {
-   CMDS="awk grep sed bc md5sum wget rar zip 7z tar"
+   CMDS="awk grep sed bc md5sum wget rar zip 7z tar gzip bzip2"
    for i in $CMDS
    do
        type -P $i &>/dev/null  && echo -e "$i command found. ${T}${G}[OK]${N}" && continue  || { echo -e "$i command not found. ${T}${R}[ERROR]${N}"; }
@@ -64,7 +64,7 @@ function cleanup() {
    rm -f *.jpg tmp_* $cookies
 }
 
-while getopts ":c:f:wdlorz7tps:" op; do
+while getopts ":c:f:wdlorz7tgbps:" op; do
    case $op in
       c)
          CHAPTER=1
@@ -97,6 +97,12 @@ while getopts ":c:f:wdlorz7tps:" op; do
       ;;
       t)
          TAR_FILE=1
+      ;;
+      g)
+         TARGZ_FILE=1
+      ;;
+      b)
+         TARBZTWO_FILE=1
       ;;
       p)
          CHECKPREREQS=1
@@ -361,6 +367,26 @@ for manga_name in "$@"; do
          echo -ne "\r$CLEAREOL`progressbar $i $total` (packing files...)"
          archive_name="${manga_name}_${chapter}.cbt"
          if tar cf $archive_name *.jpg; then
+            echo -e "\r$CLEAREOL`progressbar $i $total` ($archive_name)"
+            [[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] [`md5sum $archive_name | awk '{print $1}'`] $archive_name" >> "$log"
+         fi
+      fi
+
+      if [[ $TARGZ_FILE -eq 1 ]]; then
+         echo -ne "\r$CLEAREOL`progressbar $i $total` (packing files...)"
+         GZIP=--best
+         archive_name="${manga_name}_${chapter}.tar.gz"
+         if tar cfz $archive_name *.jpg; then
+            echo -e "\r$CLEAREOL`progressbar $i $total` ($archive_name)"
+            [[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] [`md5sum $archive_name | awk '{print $1}'`] $archive_name" >> "$log"
+         fi
+      fi
+
+      if [[ $TARBZTWO_FILE -eq 1 ]]; then
+         echo -ne "\r$CLEAREOL`progressbar $i $total` (packing files...)"
+         BZIP2=--best
+         archive_name="${manga_name}_${chapter}.tar.bz2"
+         if tar cfj $archive_name *.jpg; then
             echo -e "\r$CLEAREOL`progressbar $i $total` ($archive_name)"
             [[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] [`md5sum $archive_name | awk '{print $1}'`] $archive_name" >> "$log"
          fi

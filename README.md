@@ -23,6 +23,8 @@ One Manga Downloader (shell script)
 	zip (Needed to compress .cbz)
 	p7z (Needed to compress .cb7)
 	tar (Needed to compress .cbt, but I'm sure everyone has that on their *nix-based systems, again GNU version recommended)
+    gzip (Needed to compress .tar.gzm should be available in lots of *nix-based systems)
+    bzip2 (Needed to compress .tar.bz2, should be available in lots of *nix-based systems)
 
 #### To check for prerequisites:
 
@@ -81,7 +83,7 @@ The above command should give an output like below:
 
 	4 results.
 
-#### Explaination of options (wdlorz7tpsfc):
+#### Explaination of options (wdlorz7tgbpsfc):
 
 	w for OMWEB display compatability mode (Nothing much you would need to use except when using OMWEB)
 	d for downloading mangas to their own directory
@@ -91,6 +93,8 @@ The above command should give an output like below:
 	z for downloading manga in cbz (zip)
 	7 for downloading manga in cb7 (7zip)
 	t for downloading manga in cbt (tar)
+    g for downloading manga in tar.gz (gzip)
+    b for downloading manga in tar.bz2 (bzip2)
     p for checking prerequisites required to run onemanga
 	s for searching OneManga for defined keyword
     f for specifying a custom log filename, same with o except with a custom log filename
