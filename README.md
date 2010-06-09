@@ -43,6 +43,10 @@ or
 
     $ make install
 
+or if on any BSD-based systems etc Mac OSX / FreeBSD
+
+    $ gmake install
+
 ### **Instructions of Usage**:
 #### Example to Download in rar, zip, 7z, tar of Mirai Nikki Chapter 1 to 52:
 
