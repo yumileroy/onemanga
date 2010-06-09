@@ -79,9 +79,10 @@ function help() {
 
 function checkprereqs() {
    CMDS="awk grep sed bc md5sum wget rar zip 7z tar gzip bzip2"
+   echo -e "${G}Checking for prerequisites:${N}"
    for i in $CMDS
    do
-      type -P $i &>/dev/null  && echo -e "$i command found. ${T}${G}[OK]${N}" && continue  || { echo -e "$i command not found. ${T}${R}[ERROR]${N}"; }
+      type -P $i &>/dev/null  && echo -e "${i}${T}-${T}Command Found${T}${G}[OK]${N}" && continue  || { echo -e "${i}${T}-${T}Command Unfound${T}${R}[ERROR]${N}"; }
    done
 }
 
