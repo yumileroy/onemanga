@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# usage: onemanga [-wdlorz7tgbs] [ -f <log filename> ] [-c <first chapter>[+|-<last chapter>]] <manga name> [<manga name> ...]
+# usage: onemanga [-hwdlorz7tgbps] [ -f <log filename> ] [-c <first chapter>[+|-<last chapter>]] <manga name> [<manga name> ...]
 # Use r for rar archive, z for zip archive, 7 for 7zip archive, t for tar archive, g for tar.gz archive, b for tar.bz2 archive
 
 trap cleanup 0
@@ -52,6 +52,31 @@ function progressbar() {
    echo "]"
 }
 
+function help() {
+   echo -e "\n${Y}onemanga  - One Manga Downloader (shell script)${N}"
+   echo -e "${Y}Original Author: Suksit (http://www.suksit.com)${N}"
+   echo -e "${Y}Forked by: Yumi Nanako (yuminanako@yuminanako.info) and Leroy Lim (leroylim@yuminanako.info)${N}"
+   echo -e "${Y}License: Undecided yet, need to ask the original author.${N}\n"
+   echo -e "${G}Usage:${N}\n${T}${0} [-hwdlorz7tgbs] [ -f <log filename> ] [-c <first chapter>[+|-<last chapter>]] <manga name> [<manga name> ...]\n"
+   echo -e "${G}Options:${N}"
+   echo -e "${T}h${T}Help mode, to view this help message"
+   echo -e "${T}w${T}Used by OMWEB only for no colours output"
+   echo -e "${T}d${T}Download the manga to their own directory named as the manga title"
+   echo -e "${T}l${T}Download only the latest chapter of the manga"
+   echo -e "${T}o${T}Enable logging to onemanga.log"
+   echo -e "${T}r${T}Download manga in cbr (rar) - Default if none specified"
+   echo -e "${T}z${T}Download manga in cbz (zip)"
+   echo -e "${T}7${T}Download manga in cb7 (7zip)"
+   echo -e "${T}t${T}Download manga in cbt (tar)"
+   echo -e "${T}g${T}Download manga in tar.gz (gzip)"
+   echo -e "${T}b${T}Download manga in tar.bz2 (bzip2)"
+   echo -e "${T}p${T}Check for prerequisites needed to run ${0}"
+   echo -e "${T}s${T}Search for OneManga for defined manga keyword"
+   echo -e "${T}f${T}Specify a custom filename to log to, same with o except with custom log filename"
+   echo -e "${T}c${T}Specify chapter of manga to download, etc -c 1-52 for Chapters 1 to 52"
+   exit
+}
+
 function checkprereqs() {
    CMDS="awk grep sed bc md5sum curl rar zip 7z tar gzip bzip2"
    for i in $CMDS
@@ -64,7 +89,7 @@ function cleanup() {
    rm -f *.jpg tmp_* $cookies
 }
 
-while getopts ":c:f:wdlorz7tgbps:" op; do
+while getopts ":c:f:hwdlorz7tgbps:" op; do
    case $op in
       c)
          CHAPTER=1
@@ -73,6 +98,9 @@ while getopts ":c:f:wdlorz7tgbps:" op; do
       f)
          LOG_FILE=1
          log="$base_dir/$OPTARG"
+      ;;
+      h)
+         HELP=1
       ;;
       w)
          OMWEB=1
@@ -112,7 +140,8 @@ while getopts ":c:f:wdlorz7tgbps:" op; do
          KEYWORD="$OPTARG"
       ;;
       \?)
-         echo "Unknown option: -$OPTARG" >&2
+         echo -e "${R}Unknown option:${N} -$OPTARG" >&2
+         help
          exit 1
       ;;
       :)
@@ -133,6 +162,11 @@ while getopts ":c:f:wdlorz7tgbps:" op; do
 done
 
 shift $(($OPTIND - 1))
+
+if [[ $HELP -eq 1 ]]; then
+   help
+   exit
+fi
 
 if [[ $CHECKPREREQS -eq 1 ]]; then
    checkprereqs
