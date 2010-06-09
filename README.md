@@ -5,7 +5,7 @@ One Manga Downloader (shell script)
 ### **Description**:
 **One Manga Downloader** is a [Bash](http://www.gnu.org/software/bash/ "Bash Website") script which allow you to download Manga from OneManga to compressed archive files.
 
-- Supported Archives: rar, zip, 7z, tar
+- Supported Archives: rar, zip, 7z, tar, tar.gz, tar.bz2
 - Basic Logging - Time and Date of Filename Downloaded with MD5 checksums
 - Supports OneManga.com and 1000Manga.com
 
