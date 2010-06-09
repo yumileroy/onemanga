@@ -56,7 +56,7 @@ function checkprereqs() {
    CMDS="awk grep sed bc md5sum curl rar zip 7z tar gzip bzip2"
    for i in $CMDS
    do
-       type -P $i &>/dev/null  && echo -e "$i command found. ${T}${G}[OK]${N}" && continue  || { echo -e "$i command not found. ${T}${R}[ERROR]${N}"; }
+      type -P $i &>/dev/null  && echo -e "$i command found. ${T}${G}[OK]${N}" && continue  || { echo -e "$i command not found. ${T}${R}[ERROR]${N}"; }
    done
 }
 
@@ -287,7 +287,7 @@ for manga_name in "$@"; do
       
       echo "Downloading $display_name chapter $chapter"
       if [[ $LOG_FILE -eq 1 ]]; then
-          echo "Logging to: ${log}"
+         echo "Logging to: ${log}"
       fi
       echo -ne "\r$CLEAREOL`progressbar 0 1` (Initializing...)"
       
@@ -371,7 +371,7 @@ for manga_name in "$@"; do
             [[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] [`md5sum $archive_name | awk '{print $1}'`] $archive_name" >> "$log"
          fi
       fi
-
+      
       if [[ $TARGZ_FILE -eq 1 ]]; then
          echo -ne "\r$CLEAREOL`progressbar $i $total` (packing files...)"
          GZIP=--best
@@ -381,7 +381,7 @@ for manga_name in "$@"; do
             [[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] [`md5sum $archive_name | awk '{print $1}'`] $archive_name" >> "$log"
          fi
       fi
-
+      
       if [[ $TARBZTWO_FILE -eq 1 ]]; then
          echo -ne "\r$CLEAREOL`progressbar $i $total` (packing files...)"
          BZIP2=--best
