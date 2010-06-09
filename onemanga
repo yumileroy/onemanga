@@ -109,7 +109,13 @@ while getopts ":c:f:hwdlorz7tgbps:" op; do
          HELP=1
       ;;
       w)
-         OMWEB=1
+         R=""
+         G=""
+         Y=""
+         B=""
+         M=""
+         C=""
+         N=""
       ;;
       d)
          USE_DIR=1
@@ -248,17 +254,9 @@ for manga_name in "$@"; do
    
    if [[ ! -s "tmp_index" ]]; then
       if [[ `grep "ERROR 404: Not Found" tmp_status | wc -l` -gt 0 ]]; then
-         if [[ $OMWEB -eq 0 ]]; then
-            echo -e "\b\b\b ${R}[ERROR]${N}\nPlease make sure the manga name is correct."
-         else
-            echo -e "\b\b\b [ERROR]\nPlease make sure the manga name is correct."
-         fi
-         elif [[ `grep "unable to resolve host address" tmp_status | wc -l` -gt 0 ]]; then
-         if [[ $OMWEB -eq 0 ]]; then
-            echo -e "\b\b\b ${R}[ERROR]${N}\nPlease check your internet connection."
-         else
-            echo -e "\b\b\b [ERROR]\nPlease check your internet connection."
-         fi
+         echo -e "\b\b\b ${R}[ERROR]${N}\nPlease make sure the manga name is correct."
+      elif [[ `grep "unable to resolve host address" tmp_status | wc -l` -gt 0 ]]; then
+         echo -e "\b\b\b ${R}[ERROR]${N}\nPlease check your internet connection."
       fi
       exit
    fi
@@ -266,19 +264,11 @@ for manga_name in "$@"; do
    grep "ch-subject" tmp_index 2> /dev/null | grep "a href" | cut -f3 -d\/ > tmp_chapters
    
    if [[ ! -s tmp_chapters ]]; then
-      if [[ $OMWEB -eq 0 ]]; then
-         echo -e "\b\b\b ${R}[ERROR]${N}\nCannot extract chapter list from the specified URL."
-      else
-         echo -e "\b\b\b [ERROR]\nCannot extract chapter list from the specified URL."
-      fi
+      echo -e "\b\b\b ${R}[ERROR]${N}\nCannot extract chapter list from the specified URL."
       continue
    fi
    
-   if [[ $OMWEB -eq 0 ]]; then
-      echo -e "\b\b\b ${G}[OK]${N}"
-   else
-      echo -e "\b\b\b [OK]"
-   fi
+   echo -e "\b\b\b ${G}[OK]${N}"
    
    latest_chapter=`head -1 tmp_chapters`
    
