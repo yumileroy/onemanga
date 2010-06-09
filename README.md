@@ -87,8 +87,9 @@ The above command should give an output like below:
 
 	4 results.
 
-#### Explaination of options (wdlorz7tgbpsfc):
+#### Explaination of options (hwdlorz7tgbpsfc):
 
+    h for help message display
 	w for OMWEB display compatability mode (Nothing much you would need to use except when using OMWEB)
 	d for downloading mangas to their own directory
 	l for downloading only the latest chapter of the manga
@@ -103,6 +104,10 @@ The above command should give an output like below:
 	s for searching OneManga for defined keyword
     f for specifying a custom log filename, same with o except with a custom log filename
 	c for specifying chapters to download (etc -c 1-52 for Chapters 1 to 52)
+    
+or
+
+    $ onemanga -h 
 
 ### **onemanga Web Interface (Optional)**:
 #### Description:
