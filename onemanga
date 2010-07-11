@@ -421,5 +421,8 @@ for manga_name in "$@"; do
             [[ $LOG_FILE -eq 1 ]] && echo "[`date +%c`] [`md5sum $archive_name | awk '{print $1}'`] $archive_name" >> "$log"
          fi
       fi
+
+      cleanup
+
    done
 done
